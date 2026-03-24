@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{url_for('static', filename='bootstrap.min.css') }}">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+    <div class="container-fluid">
+
+        <!-- 1. 로고 + 서비스 이름 -->
+        <a class="navbar-brand d-flex align-items-center" href="{{ url_for('main.index') }}">
+            <div style="width:40px;height:40px;border:1px solid #000;display:flex;align-items:center;justify-content:center;margin-right:10px;">
+                로고
+            </div>
+            딸기 스마트팜 AI
+        </a>
+
+        <!-- 2. 메뉴 -->
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav mx-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('dashboard.index') }}">대시보드</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/analysis">데이터분석</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="/prediction">가격예측</a>
+                </li>
+
+            </ul>
+
+            <!-- 3. 로그인 영역 -->
+            <div>
+                <a href="{{ url_for('main.login') }}" class="btn btn-outline-dark">로그인</a>
+            </div>
+
+        </div>
+    </div>
+</nav>
+<!-- 기본 템플릿에 삽입할 내용 start -->
+{% block content %}
+{% endblock %}
+<!-- 기본 템플릿에 삽입할 내용 End -->
+</body>
+</html>
