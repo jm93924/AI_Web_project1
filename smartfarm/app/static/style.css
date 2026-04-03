@@ -1,0 +1,1051 @@
+body {
+    background-color: #f8f8f8;
+    color: #111;
+    font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+}
+
+.logo-box {
+    width: 120px;
+    height: 70px;
+    border: 2px solid #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    font-weight: 700;
+}
+
+.nav-menu-text {
+    font-size: 1.5rem;
+    margin: 0 18px;
+    color: #111 !important;
+}
+
+.hero-section {
+    padding-top: 30px;
+}
+
+.hero-subtitle {
+    font-size: 2.3rem;
+    margin-bottom: 10px;
+}
+
+.hero-title {
+    font-size: 4rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+    line-height: 1.2;
+}
+
+.hero-desc {
+    font-size: 2rem;
+    line-height: 1.5;
+    word-break: keep-all;
+}
+
+.hero-image-box {
+    width: 100%;
+    height: 360px;
+    border: 2px solid #111;
+    background: #fff;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.service-section {
+    padding: 30px 0 10px;
+}
+
+.service-card-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.service-card {
+    background: #fff;
+    border: 2px solid #111;
+    border-radius: 32px;
+    padding: 30px 24px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.service-icon {
+    font-size: 2.4rem;
+    margin-bottom: 10px;
+}
+
+.service-title {
+    font-size: 2.4rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+
+.service-summary {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.service-list {
+    padding-left: 22px;
+    margin-bottom: 0;
+    font-size: 1.35rem;
+    line-height: 1.7;
+}
+
+.main-buttons .btn {
+    min-width: 180px;
+    min-height: 72px;
+    font-size: 2rem;
+    border-radius: 16px;
+    border: 1px solid #ddd;
+}
+
+.site-footer {
+    margin-top: 60px;
+    border-top: 3px solid #111;
+    background: #f8f8f8;
+}
+
+.footer-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.footer-text {
+    font-size: 1.5rem;
+    line-height: 1.6;
+    word-break: keep-all;
+}
+
+.footer-links {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.footer-links li {
+    margin-bottom: 10px;
+}
+
+.footer-links a {
+    text-decoration: none;
+    color: #111;
+    font-size: 1.5rem;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
+
+.dashboard-page {
+    background-color: #f8f8f8;
+    min-height: 100vh;
+}
+
+.summary-card {
+    background: #fff;
+    border: 2px solid #111;
+    border-radius: 28px;
+    padding: 28px 24px 20px;
+    text-align: center;
+    height: 100%;
+}
+
+.summary-title {
+    font-size: 1.8rem;
+    margin-bottom: 22px;
+    color: #222;
+}
+
+.summary-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+}
+
+.summary-change {
+    font-size: 1.6rem;
+    font-weight: 600;
+}
+
+.summary-change.up {
+    color: #4caf32;
+}
+
+.chart-card {
+    background: transparent;
+    padding: 8px 8px 0;
+}
+
+.chart-header {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.chart-header h3 {
+    font-size: 1.9rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.chart-tabs {
+    display: inline-flex;
+    gap: 8px;
+    background: #e9e9e9;
+    border-radius: 999px;
+    padding: 4px;
+    width: fit-content;
+}
+
+.tab-btn {
+    border: none;
+    background: transparent;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.tab-btn.active {
+    background: #fff;
+    font-weight: 700;
+}
+
+.chart-body {
+    background: transparent;
+    height: 280px;
+    padding: 10px 0 0;
+}
+
+.section-title {
+    font-size: 3rem;
+    font-weight: 800;
+}
+
+.cultivation-box {
+    background: transparent;
+    padding: 8px 0 20px;
+}
+
+.cultivation-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.crop-name {
+    font-size: 2.6rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.crop-status {
+    font-size: 1.8rem;
+    margin-top: 6px;
+}
+
+.recommend-box {
+    min-width: 270px;
+    text-align: center;
+    border: 2px solid #111;
+    border-radius: 16px;
+    background: #fff;
+    font-size: 2.4rem;
+    font-weight: 700;
+    padding: 12px 20px;
+}
+
+.cultivation-divider {
+    border-top: 2px solid #ddd;
+    margin: 18px 0 12px;
+}
+
+.info-item {
+    padding: 8px 0;
+}
+
+.info-label {
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+    color: #111;
+    font-weight: 600;
+}
+
+.info-value {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.info-sub {
+    font-size: 1.5rem;
+    color: #333;
+    margin-top: 4px;
+}
+
+@media (max-width: 991px) {
+    .summary-title {
+        font-size: 1.5rem;
+    }
+
+    .summary-value {
+        font-size: 2rem;
+    }
+
+    .section-title {
+        font-size: 2.2rem;
+    }
+
+    .crop-name {
+        font-size: 2rem;
+    }
+
+    .recommend-box {
+        font-size: 1.8rem;
+        min-width: 220px;
+    }
+
+    .chart-body {
+        height: 240px;
+    }
+}
+
+
+.active-menu {
+    background-color: #e5e5e5;
+    border-radius: 4px;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+}
+
+.analysis-page {
+    background-color: #f8f8f8;
+    min-height: 100vh;
+}
+
+.analysis-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 14px;
+}
+
+.analysis-desc {
+    font-size: 1.8rem;
+    color: #222;
+    margin-bottom: 0;
+}
+
+.analysis-go-btn {
+    display: inline-block;
+    padding: 18px 30px;
+    border: 2px solid #111;
+    border-radius: 18px;
+    background: #fff;
+    color: #111;
+    text-decoration: none;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.analysis-go-btn:hover {
+    color: #111;
+    background: #f1f1f1;
+}
+
+.section-main-title {
+    font-size: 2.7rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.section-subtext {
+    font-size: 1.6rem;
+    margin-bottom: 0;
+    color: #222;
+}
+
+.analysis-tabs {
+    display: flex;
+    gap: 14px;
+}
+
+.analysis-tab {
+    border: 2px solid #111;
+    background: #fff;
+    border-radius: 12px;
+    min-width: 90px;
+    height: 56px;
+    font-size: 1.6rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.analysis-tab.active {
+    background: #dcdcdc;
+}
+
+.env-recommend-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.env-card {
+    background: #fff;
+    border: 2px solid #111;
+    border-radius: 16px;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.env-left {
+    flex: 1;
+}
+
+.env-title {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 4px;
+}
+
+.env-desc {
+    font-size: 1.5rem;
+    color: #222;
+}
+
+.env-right {
+    text-align: right;
+    min-width: 160px;
+}
+
+.env-diff {
+    font-size: 2rem;
+    line-height: 1.2;
+}
+
+.env-diff.positive {
+    color: #111;
+}
+
+.env-diff.negative {
+    color: #111;
+}
+
+.env-rate {
+    font-size: 1.3rem;
+    color: #222;
+}
+
+.effect-card {
+    border: 2px solid #111;
+    border-radius: 24px;
+    padding: 20px 22px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    height: 100%;
+}
+
+.effect-blue {
+    background: #dbe8f5;
+}
+
+.effect-green {
+    background: #dff0d8;
+}
+
+.effect-icon {
+    font-size: 2.4rem;
+    line-height: 1;
+}
+
+.effect-title {
+    font-size: 1.9rem;
+    margin-bottom: 6px;
+    color: #222;
+}
+
+.effect-value {
+    font-size: 2.8rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 6px;
+}
+
+.effect-blue .effect-value {
+    color: #2a67b1;
+}
+
+.effect-green .effect-value {
+    color: #2f8b2f;
+}
+
+.effect-sub {
+    font-size: 1.5rem;
+    color: #222;
+}
+
+.upload-wrapper {
+    border: 2px solid #111;
+    border-radius: 28px;
+    padding: 24px 26px;
+    background: #fff;
+}
+
+.upload-title {
+    font-size: 2.4rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+}
+
+.upload-desc {
+    font-size: 1.5rem;
+    color: #222;
+    margin-bottom: 0;
+}
+
+.ai-start-btn {
+    border: 2px solid #111;
+    border-radius: 12px;
+    background: #fff;
+    min-width: 220px;
+    height: 64px;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.ai-start-btn:hover {
+    background: #f1f1f1;
+}
+
+.upload-box {
+    width: 100%;
+    min-height: 140px;
+    border: 3px dashed #333;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    cursor: pointer;
+    text-align: center;
+    padding: 20px;
+}
+
+.upload-box:hover {
+    background: #fafafa;
+}
+
+.upload-box-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.upload-box-sub {
+    font-size: 1.4rem;
+    color: #333;
+}
+
+@media (max-width: 991px) {
+    .analysis-title {
+        font-size: 2.4rem;
+    }
+
+    .analysis-desc {
+        font-size: 1.4rem;
+    }
+
+    .section-main-title {
+        font-size: 2.2rem;
+    }
+
+    .analysis-go-btn {
+        font-size: 1.5rem;
+        padding: 14px 24px;
+    }
+
+    .env-title {
+        font-size: 1.6rem;
+    }
+
+    .env-desc {
+        font-size: 1.2rem;
+    }
+
+    .env-diff {
+        font-size: 1.6rem;
+    }
+
+    .effect-title {
+        font-size: 1.5rem;
+    }
+
+    .effect-value {
+        font-size: 2.1rem;
+    }
+
+    .upload-title {
+        font-size: 2rem;
+    }
+
+    .ai-start-btn {
+        font-size: 1.5rem;
+        min-width: 180px;
+        height: 56px;
+    }
+}
+
+
+.prediction-page {
+    background-color: #f8f8f8;
+    min-height: 100vh;
+}
+
+.prediction-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.prediction-desc {
+    font-size: 1.8rem;
+    color: #222;
+    margin-bottom: 0;
+}
+
+.prediction-filter-box {
+    border: 2px solid #111;
+    border-radius: 22px;
+    background: #fff;
+    padding: 20px 22px;
+}
+
+.filter-label {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.custom-select {
+    height: 56px;
+    border: 2px solid #111;
+    border-radius: 12px;
+    font-size: 1.4rem;
+}
+
+.predict-run-btn {
+    height: 56px;
+    border: 2px solid #111;
+    border-radius: 12px;
+    background: #dff4ff;
+    font-size: 1.7rem;
+    font-weight: 700;
+}
+
+.predict-run-btn:hover {
+    background: #ccefff;
+}
+
+.prediction-summary-card {
+    background: #fff;
+    border: 2px solid #111;
+    border-radius: 24px;
+    padding: 18px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 145px;
+}
+
+.summary-left {
+    flex: 1;
+}
+
+.prediction-card-title {
+    font-size: 1.7rem;
+    margin-bottom: 6px;
+    color: #222;
+}
+
+.prediction-card-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 6px;
+}
+
+.prediction-card-sub {
+    font-size: 1.35rem;
+    color: #333;
+}
+
+.summary-icon-box {
+    width: 86px;
+    height: 86px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.8rem;
+    margin-left: 16px;
+    flex-shrink: 0;
+}
+
+.icon-blue {
+    background: #dce8f5;
+}
+
+.icon-green {
+    background: #dff0d8;
+}
+
+.icon-gray {
+    background: #ececec;
+}
+
+.prediction-tabs {
+    display: inline-flex;
+    gap: 8px;
+    background: #ececec;
+    border-radius: 999px;
+    padding: 4px;
+    flex-wrap: wrap;
+}
+
+.prediction-tab {
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 999px;
+    text-decoration: none;
+    color: #111;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.prediction-tab.active {
+    background: #fff;
+}
+
+.prediction-tab:hover {
+    color: #111;
+}
+
+.prediction-chart-card {
+    height: 320px;
+    background: transparent;
+    padding-top: 6px;
+}
+
+.forecast-item-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 18px 20px;
+    min-height: 120px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.04);
+}
+
+.forecast-date {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.forecast-price {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #d33128;
+    line-height: 1.2;
+    margin-bottom: 8px;
+}
+
+.forecast-confidence {
+    font-size: 1.2rem;
+    color: #555;
+}
+
+@media (max-width: 991px) {
+    .prediction-title {
+        font-size: 2.4rem;
+    }
+
+    .prediction-desc {
+        font-size: 1.4rem;
+    }
+
+    .prediction-card-title {
+        font-size: 1.4rem;
+    }
+
+    .prediction-card-value {
+        font-size: 2rem;
+    }
+
+    .summary-icon-box {
+        width: 70px;
+        height: 70px;
+        font-size: 2.2rem;
+    }
+}
+
+
+.section-icon-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.section-icon-title h2 {
+    font-size: 2.6rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.section-icon {
+    font-size: 2.4rem;
+    line-height: 1;
+}
+
+.weather-impact-card {
+    height: 320px;
+    background: transparent;
+    padding: 10px 0;
+}
+
+.shipping-recommend-card {
+    background: #dff0d8;
+    border: 2px solid #9ad483;
+    border-radius: 24px;
+    padding: 24px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.shipping-left {
+    flex: 1;
+}
+
+.shipping-title {
+    font-size: 2.6rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.shipping-period {
+    font-size: 2rem;
+    color: #222;
+}
+
+.shipping-right {
+    text-align: right;
+    min-width: 220px;
+}
+
+.shipping-price-label {
+    font-size: 2.2rem;
+    color: #222;
+    margin-bottom: 6px;
+}
+
+.shipping-price {
+    font-size: 2.8rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.strategy-box {
+    border-radius: 24px;
+    padding: 26px 28px;
+    font-size: 1.9rem;
+    line-height: 1.5;
+    border: 2px solid transparent;
+    word-break: keep-all;
+}
+
+.strategy-blue {
+    background: #d9eef9;
+    border-color: #a8d0e8;
+}
+
+.strategy-purple {
+    background: #efd8ef;
+    border-color: #e1a9dc;
+}
+
+@media (max-width: 991px) {
+    .section-icon-title h2 {
+        font-size: 2rem;
+    }
+
+    .weather-impact-card {
+        height: 260px;
+    }
+
+    .shipping-title {
+        font-size: 2rem;
+    }
+
+    .shipping-period {
+        font-size: 1.5rem;
+    }
+
+    .shipping-price-label {
+        font-size: 1.6rem;
+    }
+
+    .shipping-price {
+        font-size: 2.1rem;
+    }
+
+    .strategy-box {
+        font-size: 1.4rem;
+        padding: 20px;
+    }
+}
+
+.signup-page {
+    min-height: calc(100vh - 80px);
+    background: #f8f8f8;
+    padding: 40px 20px;
+}
+
+.signup-wrapper {
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.signup-card {
+    background: #fff;
+    border: 2px solid #111;
+    padding: 50px 40px;
+}
+
+.signup-title {
+    font-size: 3.2rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 14px;
+}
+
+.signup-subtitle {
+    font-size: 1.8rem;
+    text-align: center;
+    margin-bottom: 36px;
+    color: #222;
+}
+
+.signup-label {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.signup-input {
+    width: 100%;
+    height: 56px;
+    border: 2px solid #111;
+    border-radius: 12px;
+    font-size: 1.5rem;
+    padding: 0 14px;
+    background: #fff;
+}
+
+select.signup-input {
+    appearance: none;
+}
+
+.signup-required-text {
+    font-size: 1.2rem;
+    margin-top: 10px;
+    margin-bottom: 24px;
+    color: #222;
+}
+
+.signup-btn-group {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.signup-btn {
+    min-width: 150px;
+    height: 64px;
+    border: 2px solid #111;
+    border-radius: 14px;
+    background: #fff;
+    font-size: 2rem;
+    font-weight: 700;
+    text-decoration: none;
+    color: #111;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.signup-btn:hover {
+    background: #f1f1f1;
+    color: #111;
+}
+
+.cancel-btn {
+    background: #fff;
+}
+
+@media (max-width: 768px) {
+    .signup-card {
+        padding: 32px 22px;
+    }
+
+    .signup-title {
+        font-size: 2.4rem;
+    }
+
+    .signup-subtitle {
+        font-size: 1.4rem;
+    }
+
+    .signup-label {
+        font-size: 1.4rem;
+    }
+
+    .signup-input {
+        height: 50px;
+        font-size: 1.2rem;
+    }
+
+    .signup-btn {
+        min-width: 120px;
+        height: 54px;
+        font-size: 1.5rem;
+    }
+}

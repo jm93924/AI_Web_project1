@@ -6,8 +6,8 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <link rel="stylesheet" href="{{url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="{{url_for('static', filename='bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css') }}">
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
@@ -26,23 +26,40 @@
             <ul class="navbar-nav mx-auto">
 
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('dashboard.index') }}">대시보드</a>
+                    <a class="nav-link nav-menu-text {% if request.endpoint == 'dashboard.index' %}active-menu{% endif %}"
+                       href="{{ url_for('dashboard.index') }}">
+                        대시보드
+                    </a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="/analysis">데이터분석</a>
+                    <a class="nav-link nav-menu-text {% if request.endpoint == 'analysis.index' %}active-menu{% endif %}"
+                       href="{{ url_for('analysis.index') }}">
+                        데이터분석
+                    </a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="/prediction">가격예측</a>
+                    <a class="nav-link nav-menu-text {% if request.endpoint == 'prediction.index' %}active-menu{% endif %}"
+                       href="{{ url_for('prediction.index') }}">
+                        가격 예측
+                    </a>
                 </li>
 
             </ul>
 
             <!-- 3. 로그인 영역 -->
+            {% if g.customer %}
             <div>
-                <a href="{{ url_for('main.login') }}" class="btn btn-outline-dark">로그인</a>
+                <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-dark">{{g.customer.id}}님 (로그아웃)</a>
             </div>
+            {% else %}
+            <div>
+                <a href="{{ url_for('auth.signin') }}" class="btn btn-outline-dark">로그인</a>
+                <a href="{{ url_for('auth.signup') }}" class="btn btn-outline-dark">계정생성</a>
+            </div>
+            {% endif %}
+
 
         </div>
     </div>
@@ -51,5 +68,40 @@
 {% block content %}
 {% endblock %}
 <!-- 기본 템플릿에 삽입할 내용 End -->
+
+<!-- 11. footer -->
+<footer class="site-footer mt-5">
+    <div class="container py-5">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <h4 class="footer-title">딸기 스마트팜 AI</h4>
+                <p class="footer-text">
+                    AI 기술로 딸기 농가의 생산성을 높이고
+                    수익을 극대화하는 스마트팜 플랫폼
+                </p>
+            </div>
+
+            <div class="col-md-4">
+                <h4 class="footer-title">연락처</h4>
+                <p class="footer-text mb-2">☎ 02-1234-5678</p>
+                <p class="footer-text mb-2">✉ contact@strawberryfarm.ai</p>
+                <p class="footer-text mb-0">📍 서울특별시 종로구 돈화문로 123</p>
+            </div>
+
+            <div class="col-md-4">
+                <h4 class="footer-title">바로가기</h4>
+                <ul class="footer-links">
+                    <li><a href="">서비스 소개</a></li>
+                    <li><a href="">문의하기</a></li>
+                    <li><a href="">이용약관</a></li>
+                    <li><a href="">개인정보처리방침</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
+
 </body>
 </html>

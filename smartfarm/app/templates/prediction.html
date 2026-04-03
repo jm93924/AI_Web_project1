@@ -1,4 +1,263 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>가격예측 화면입니다.</h1>
+
+<div class="prediction-page">
+    <div class="container py-4">
+
+        <!-- 2 -->
+        <section class="prediction-hero mb-4">
+            <h1 class="prediction-title">작물 가격 예측 서비스</h1>
+            <p class="prediction-desc">
+                도/소매가 분석과 날씨 데이터를 연동하여 정확한 가격을 예측합니다
+            </p>
+        </section>
+
+        <!-- 3, 4 -->
+        <section class="prediction-filter-section mb-4">
+            <form method="get" class="prediction-filter-box">
+                <div class="row g-3 align-items-end">
+
+                    <div class="col-md-3">
+                        <label class="filter-label">작물 선택</label>
+                        <select name="crop" class="form-select custom-select">
+                            <option value="딸기" {% if selected_crop == '딸기' %}selected{% endif %}>딸기</option>
+                            <option value="토마토" {% if selected_crop == '토마토' %}selected{% endif %}>토마토</option>
+                            <option value="오이" {% if selected_crop == '오이' %}selected{% endif %}>오이</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="filter-label">품종</label>
+                        <select name="variety" class="form-select custom-select">
+                            <option value="설향" {% if selected_variety == '설향' %}selected{% endif %}>설향</option>
+                            <option value="금실" {% if selected_variety == '금실' %}selected{% endif %}>금실</option>
+                            <option value="죽향" {% if selected_variety == '죽향' %}selected{% endif %}>죽향</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="filter-label">지역</label>
+                        <select name="region" class="form-select custom-select">
+                            <option value="전국" {% if selected_region == '전국' %}selected{% endif %}>전국</option>
+                            <option value="서울" {% if selected_region == '서울' %}selected{% endif %}>서울</option>
+                            <option value="경기" {% if selected_region == '경기' %}selected{% endif %}>경기</option>
+                            <option value="충남" {% if selected_region == '충남' %}selected{% endif %}>충남</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="filter-label">예측 기간</label>
+                        <select name="period" class="form-select custom-select">
+                            <option value="short" {% if selected_period == 'short' %}selected{% endif %}>단기(1~3일)</option>
+                            <option value="long" {% if selected_period == 'long' %}selected{% endif %}>장기(6개월)</option>
+                            <option value="history" {% if selected_period == 'history' %}selected{% endif %}>과거 데이터</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <button type="submit" class="predict-run-btn w-100">예측 실행</button>
+                    </div>
+
+                </div>
+            </form>
+        </section>
+
+        <!-- 5,6,7 -->
+        <section class="prediction-summary-section mb-4">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="prediction-summary-card">
+                        <div class="summary-left">
+                            <div class="prediction-card-title">현재 가격</div>
+                            <div class="prediction-card-value">{{ "{:,}".format(current_price) }}원/kg</div>
+                            <div class="prediction-card-sub">{{ current_date }} 기준</div>
+                        </div>
+                        <div class="summary-icon-box icon-blue">💲</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="prediction-summary-card">
+                        <div class="summary-left">
+                            <div class="prediction-card-title">내일 예측 가격</div>
+                            <div class="prediction-card-value">{{ "{:,}".format(predicted_tomorrow_price) }}원/kg</div>
+                            <div class="prediction-card-sub text-success">+{{ price_diff }}원 ({{ price_diff_rate }}%)</div>
+                        </div>
+                        <div class="summary-icon-box icon-green">📈</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="prediction-summary-card">
+                        <div class="summary-left">
+                            <div class="prediction-card-title">예측 신뢰도</div>
+                            <div class="prediction-card-value">{{ confidence }}%</div>
+                            <div class="prediction-card-sub">날씨 데이터 연동</div>
+                        </div>
+                        <div class="summary-icon-box icon-gray">☁</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8 -->
+        <section class="prediction-tab-section mb-3">
+            <div class="prediction-tabs">
+                <a href="{{ url_for('prediction.index', crop=selected_crop, variety=selected_variety, region=selected_region, period='short') }}"
+                   class="prediction-tab {% if selected_period == 'short' %}active{% endif %}">
+                    단기 예측 (3일)
+                </a>
+
+                <a href="{{ url_for('prediction.index', crop=selected_crop, variety=selected_variety, region=selected_region, period='long') }}"
+                   class="prediction-tab {% if selected_period == 'long' %}active{% endif %}">
+                    장기 예측 (6개월)
+                </a>
+
+                <a href="{{ url_for('prediction.index', crop=selected_crop, variety=selected_variety, region=selected_region, period='history') }}"
+                   class="prediction-tab {% if selected_period == 'history' %}active{% endif %}">
+                    과거 데이터
+                </a>
+            </div>
+        </section>
+
+        <!-- 9 -->
+        <section class="prediction-chart-section mb-4">
+            <div class="prediction-chart-card">
+                <canvas id="priceForecastChart"></canvas>
+            </div>
+        </section>
+
+        <!-- 10 -->
+        <section class="prediction-result-list">
+            <div class="row g-4">
+                {% for item in forecast_list %}
+                <div class="col-md-4">
+                    <div class="forecast-item-card">
+                        <div class="forecast-date">📅 {{ item.date }}</div>
+                        <div class="forecast-price">{{ "{:,}".format(item.price) }}원</div>
+                        <div class="forecast-confidence">신뢰도: {{ item.confidence }}%</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- 11 -->
+        <section class="weather-impact-section mt-5 mb-5">
+            <div class="section-icon-title mb-4">
+                <span class="section-icon">☁</span>
+                <h2>날씨 영향 분석</h2>
+            </div>
+
+            <div class="weather-impact-card">
+                <canvas id="weatherImpactChart"></canvas>
+            </div>
+        </section>
+
+        <!-- 12 -->
+        <section class="shipping-recommend-section mb-4">
+            <div class="section-icon-title mb-3">
+                <span class="section-icon text-danger">📈</span>
+                <h2>출하 추천</h2>
+            </div>
+
+            <div class="shipping-recommend-card">
+                <div class="shipping-left">
+                    <div class="shipping-title">최적 출하 시기</div>
+                    <div class="shipping-period">{{ best_shipping_period }}</div>
+                </div>
+
+                <div class="shipping-right">
+                    <div class="shipping-price-label">예상 가격</div>
+                    <div class="shipping-price">{{ "{:,}".format(best_shipping_price) }}원/kg</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 13 -->
+        <section class="market-trend-section mb-4">
+            <div class="strategy-box strategy-blue">
+                <strong>시장 동향:</strong> {{ market_trend_text }}
+            </div>
+        </section>
+
+        <!-- 14 -->
+        <section class="long-term-strategy-section mb-5">
+            <div class="strategy-box strategy-purple">
+                <strong>장기 전략:</strong> {{ long_term_strategy_text }}
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const chartLabels = {{ chart_labels|tojson }};
+    const chartValues = {{ chart_values|tojson }};
+
+    const ctx = document.getElementById('priceForecastChart');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartLabels,
+            datasets: [{
+                label: '도매가 (원/kg)',
+                data: chartValues,
+                borderColor: '#cf4338',
+                backgroundColor: 'rgba(207, 67, 56, 0.12)',
+                tension: 0.3,
+                fill: false,
+                pointRadius: 4,
+                pointHoverRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true
+                }
+            }
+        }
+    });
+</script>
+
+<script>
+    const weatherImpactLabels = {{ weather_impact_labels|tojson }};
+    const weatherImpactValues = {{ weather_impact_values|tojson }};
+
+    const weatherCtx = document.getElementById('weatherImpactChart');
+    new Chart(weatherCtx, {
+        type: 'bar',
+        data: {
+            labels: weatherImpactLabels,
+            datasets: [{
+                label: '영향도(%)',
+                data: weatherImpactValues,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: '영향도(%)'
+                    }
+                }
+            }
+        }
+    });
+</script>
+
 {% endblock %}

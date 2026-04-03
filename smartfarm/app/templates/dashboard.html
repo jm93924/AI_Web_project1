@@ -1,4 +1,168 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1>대시보드입니다.</h1>
+
+<div class="dashboard-page">
+    <div class="container py-4">
+
+        <!-- 상단 요약 카드 -->
+        <section class="summary-section mb-4">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="summary-card">
+                        <div class="summary-title">오늘의 딸기 도매가</div>
+                        <div class="summary-value">10,500원 / kg</div>
+                        <div class="summary-change up">↗ +0.9%</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="summary-card">
+                        <div class="summary-title">이번 달 예상 수확량</div>
+                        <div class="summary-value">1,820 kg</div>
+                        <div class="summary-change up">↗ +5.2%</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="summary-card">
+                        <div class="summary-title">이번 달 예상 매출</div>
+                        <div class="summary-value">19,110,000원</div>
+                        <div class="summary-change up">↗ +6.1%</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 차트 영역 -->
+        <section class="chart-section mb-5">
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>전국 딸기 생산량 추이</h3>
+                            <div class="chart-tabs">
+                                <button class="tab-btn active">일간</button>
+                                <button class="tab-btn">주간</button>
+                                <button class="tab-btn">월간</button>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="productionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>전국 딸기 가격 추이</h3>
+                            <div class="chart-tabs">
+                                <button class="tab-btn active">일간</button>
+                                <button class="tab-btn">주간</button>
+                                <button class="tab-btn">월간</button>
+                            </div>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="priceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 재배 현황 -->
+        <section class="cultivation-section">
+            <h2 class="section-title mb-4">재배 현황</h2>
+
+            <div class="cultivation-box">
+                <div class="cultivation-top">
+                    <div>
+                        <div class="crop-name">딸기 (A동)</div>
+                        <div class="crop-status">재배중</div>
+                    </div>
+
+                    <div class="recommend-box">
+                        조기 출하 권장
+                    </div>
+                </div>
+
+                <div class="cultivation-divider"></div>
+
+                <div class="row g-4 cultivation-info">
+                    <div class="col-md-4">
+                        <div class="info-item">
+                            <div class="info-label">📅 예상 출하일</div>
+                            <div class="info-value">2026-04-07</div>
+                            <div class="info-sub">25일 남음</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="info-item">
+                            <div class="info-label">🛒 예상 출하량</div>
+                            <div class="info-value">580kg</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="info-item">
+                            <div class="info-label">💲 예상 수익</div>
+                            <div class="info-value">6,090,000원</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const productionCtx = document.getElementById('productionChart');
+    new Chart(productionCtx, {
+        type: 'line',
+        data: {
+            labels: ['03/01', '03/02', '03/03', '03/04', '03/05', '03/06', '03/07', '03/08', '03/09', '03/10', '03/11', '03/12', '03/13', '03/14'],
+            datasets: [{
+                label: '생산량(kg)',
+                data: [62, 65, 58, 64, 67, 63, 59, 61, 66, 68, 64, 62, 65, 67],
+                borderColor: '#67b686',
+                backgroundColor: 'rgba(103, 182, 134, 0.15)',
+                tension: 0.35,
+                fill: false,
+                pointRadius: 4,
+                pointHoverRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    const priceCtx = document.getElementById('priceChart');
+    new Chart(priceCtx, {
+        type: 'line',
+        data: {
+            labels: ['03/01', '03/02', '03/03', '03/04', '03/05', '03/06', '03/07', '03/08', '03/09', '03/10', '03/11', '03/12', '03/13', '03/14'],
+            datasets: [{
+                label: '가격(원/kg)',
+                data: [10750, 10680, 10600, 10520, 10440, 10530, 10600, 10540, 10480, 10400, 10480, 10540, 10540, 10600],
+                borderColor: '#c94a3b',
+                backgroundColor: 'rgba(201, 74, 59, 0.15)',
+                tension: 0.35,
+                fill: false,
+                pointRadius: 4,
+                pointHoverRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+</script>
+
 {% endblock %}

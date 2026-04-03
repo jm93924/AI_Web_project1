@@ -18,11 +18,11 @@ def create_app():   # 관례적으로 사용하는 이름
     from . import models
 
     # Blueprint
-    from .views import main_views,analysis_views, board_views, login_views, prediction_views
+    from .views import main_views,analysis_views, board_views, prediction_views, auth_views
     app.register_blueprint(main_views.bp)
     app.register_blueprint(analysis_views.bp)
     app.register_blueprint(board_views.bp)
-    app.register_blueprint(login_views.bp)
     app.register_blueprint(prediction_views.bp)
+    app.register_blueprint(auth_views.bp)
 
     return app
