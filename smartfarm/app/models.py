@@ -20,20 +20,20 @@ class FarmInfo(db.Model):
     district = db.Column(db.String(40), nullable=False)
     city = db.Column(db.String(40), nullable=False)
 
-# class Environment(db.Model):
-#     __tablename__ = 'environment'
-#     farm_id = db.Column(db.Integer, nullable=False)
-#     measure_time = db.Column(db.DateTime, nullable=False)
-#     out_temp = db.Column(db.Float)
-#     out_wind_direction = db.Column(db.Integer)
-#     out_wind_speed = db.Column(db.Float)
-#     solar_radiation = db.Column(db.Integer)
-#     solar_radiation_sum = db.Column(db.Integer, nullable=False)
-#     rain = db.Column(db.Integer)
-#     inside_temp = db.Column(db.Float, nullable=False)
-#     relative_humidity = db.Column(db.Float, nullable=False)
-#     carbon_dioxide = db.Column(db.Integer, nullable=False)
-#     soil_temp = db.Column(db.Float)
+class Environment(db.Model):
+    __tablename__ = 'environment'
+    farm_id = db.Column(db.Integer, db.ForeignKey('farm_info.farm_id'), nullable=False, primary_key=True)
+    measure_time = db.Column(db.DateTime, nullable=False, primary_key=True)
+    out_temp = db.Column(db.Float)
+    out_wind_direction = db.Column(db.Integer)
+    out_wind_speed = db.Column(db.Float)
+    solar_radiation = db.Column(db.Integer)
+    solar_radiation_sum = db.Column(db.Integer, nullable=False)
+    rain = db.Column(db.Integer)
+    inside_temp = db.Column(db.Float, nullable=False)
+    relative_humidity = db.Column(db.Float, nullable=False)
+    carbon_dioxide = db.Column(db.Integer, nullable=False)
+    soil_temp = db.Column(db.Float)
 
 # class GrowthData(db.Model):
 #     __tablename__ = 'growth_data'
@@ -59,7 +59,7 @@ class FarmInfo(db.Model):
 
 class CultivationInfo(db.Model):
     __tablename__ = 'cultivation_info'
-    farm_id = db.Column(db.Integer, nullable=False, primary_key=True)
+    farm_id = db.Column(db.Integer, db.ForeignKey('farm_info.farm_id'), nullable=False, primary_key=True)
     house_type = db.Column(db.String, nullable=False)
     house_form = db.Column(db.String, nullable=False)
     total_area = db.Column(db.Float, nullable=False)
@@ -69,5 +69,5 @@ class CultivationInfo(db.Model):
 
 class CultivationVariety(db.Model):
     __tablename__ = 'cultivation_variety'
-    farm_id = db.Column(db.Integer, nullable=False, primary_key=True)
+    farm_id = db.Column(db.Integer, db.ForeignKey('farm_info.farm_id'), nullable=False, primary_key=True)
     item_variety = db.Column(db.String, nullable=False, primary_key=True)
