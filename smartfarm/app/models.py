@@ -10,3 +10,64 @@ class Customer(db.Model):
     address = db.Column(db.String(200), nullable=False)
     phone = db.Column(db.String(40), nullable=False)
     email = db.Column(db.String(100), nullable=False)
+
+class FarmInfo(db.Model):
+    __tablename__ = 'farm_info'
+    farm_id = db.Column(db.Integer, db.Sequence('farm_info_seq', start=1, increment=1), primary_key=True)
+    survey_year = db.Column(db.Integer, nullable=False)
+    item = db.Column(db.String(40), nullable=False)
+    farm_num = db.Column(db.Integer, nullable=False)
+    district = db.Column(db.String(40), nullable=False)
+    city = db.Column(db.String(40), nullable=False)
+
+# class Environment(db.Model):
+#     __tablename__ = 'environment'
+#     farm_id = db.Column(db.Integer, nullable=False)
+#     measure_time = db.Column(db.DateTime, nullable=False)
+#     out_temp = db.Column(db.Float)
+#     out_wind_direction = db.Column(db.Integer)
+#     out_wind_speed = db.Column(db.Float)
+#     solar_radiation = db.Column(db.Integer)
+#     solar_radiation_sum = db.Column(db.Integer, nullable=False)
+#     rain = db.Column(db.Integer)
+#     inside_temp = db.Column(db.Float, nullable=False)
+#     relative_humidity = db.Column(db.Float, nullable=False)
+#     carbon_dioxide = db.Column(db.Integer, nullable=False)
+#     soil_temp = db.Column(db.Float)
+
+# class GrowthData(db.Model):
+#     __tablename__ = 'growth_data'
+#     farm_id = db.Column(db.Integer, nullable=False)
+#     survey_date = db.Column(db.DateTime, nullable=False)
+#     plant_num = db.Column(db.Integer, nullable=False)
+#     axillary_branch = db.Column(db.String)
+#     plant_height = db.Column(db.Float, nullable=False)
+#     leaf_count = db.Column(db.Integer)
+#     leaf_length = db.Column(db.Float)
+#     leaf_width = db.Column(db.Float)
+#     petiole_length = db.Column(db.Float)
+#     crown_diameter = db.Column(db.Float, nullable=False)
+#     flower_cluster_no = db.Column(db.Integer)
+#     fruits_per_cluster = db.Column(db.Integer)
+
+# class ProductData(db.Model):
+#     __tablename__ = 'product_data'
+#     farm_id = db.Column(db.Integer, nullable=False)
+#     production_date = db.Column(db.DateTime, nullable=False)
+#     total_quantity = db.Column(db.Float, nullable=False)
+#     total_sales = db.Column(db.Integer)
+
+class CultivationInfo(db.Model):
+    __tablename__ = 'cultivation_info'
+    farm_id = db.Column(db.Integer, nullable=False, primary_key=True)
+    house_type = db.Column(db.String, nullable=False)
+    house_form = db.Column(db.String, nullable=False)
+    total_area = db.Column(db.Float, nullable=False)
+    planting_area = db.Column(db.Float, nullable=False)
+    planting_density = db.Column(db.Float, nullable=False)
+    planting_date = db.Column(db.DateTime, nullable=False)
+
+class CultivationVariety(db.Model):
+    __tablename__ = 'cultivation_variety'
+    farm_id = db.Column(db.Integer, nullable=False, primary_key=True)
+    item_variety = db.Column(db.String, nullable=False, primary_key=True)
