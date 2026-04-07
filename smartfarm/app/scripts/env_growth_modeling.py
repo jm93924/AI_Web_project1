@@ -1,13 +1,92 @@
 from app import create_app, db
-from app.models import FarmInfo, Environment, GrowthData
+from app.models import FarmInfo, Environment, GrowthData, Analysis
+from datetime import datetime
 
 import pandas as pd
 import numpy as np
 
 from sklearn.model_selection import GroupShuffleSplit
-from sklearn.multioutput import MultiOutputRegressor
-from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_absolute_error, r2_score
+
+from sklearn.ensemble import (
+    RandomForestRegressor,
+    ExtraTreesRegressor,
+    GradientBoostingRegressor,
+    HistGradientBoostingRegressor
+)
+
+def save_analysis_result_to_db(
+    fitted_models,
+    result_df,
+    feature_cols,
+    target_col,
+    analyzed_type='기본'
+):
+    """
+    fitted_models: 학습 완료 모델 dict
+    result_df: 모델 성능 비교 DataFrame (model, MAE, R2)
+    feature_cols: 실제 학습에 사용한 입력 컬럼 리스트
+    target_col: 실제 타겟 컬럼명
+    analyzed_type: 분석 유형 (기본값='기본')
+    """
+
+    # 1. 기본값 처리
+    if not analyzed_type or not str(analyzed_type).strip():
+        analyzed_type = '기본'
+    else:
+        analyzed_type = str(analyzed_type).strip()
+
+    analyzed_name = f"env_growth_analysis_{analyzed_type}"
+    analyze_input = ",".join(feature_cols)
+    analyze_target = str(target_col)
+
+    # 2. RandomForest importance 가져오기
+    rf_model = fitted_models['RandomForest']
+
+    rf_importance = pd.Series(
+        rf_model.feature_importances_,
+        index=feature_cols
+    )
+
+    def get_imp(col_name):
+        return float(rf_importance.get(col_name, 0.0))
+
+    # 3. 모델 점수 dict
+    score_map = dict(zip(result_df['model'], result_df['R2']))
+
+    # 4. DB row 생성
+    row = Analysis(
+        analyzed_type=analyzed_type,
+        analyzed_name=analyzed_name,
+        analyze_input=analyze_input,
+        analyze_target=analyze_target,
+
+        temp_mean_importance=get_imp('x_temp_mean'),
+        hum_mean_importance=get_imp('x_hum_mean'),
+        co2_mean_importance=get_imp('x_co2_mean'),
+        rad_per_day_importance=get_imp('x_rad_per_day'),
+        high_temp_hours_importance=get_imp('x_high_temp_hours'),
+        low_temp_hours_importance=get_imp('x_low_temp_hours'),
+        vpd_importance=get_imp('x_vpd'),
+        gdd_cum_importance=get_imp('x_gdd_cum'),
+        prev_plant_height_importance=get_imp('prev_초장'),
+
+        random_forest_score=float(score_map.get('RandomForest', 0.0)),
+        extra_trees_score=float(score_map.get('ExtraTrees', 0.0)),
+        gradient_boosting_score=float(score_map.get('GradientBoosting', 0.0)),
+        hist_gradient_boosting_score=float(score_map.get('HistGradientBoosting', 0.0)),
+
+        analyzed_date=datetime.now()
+    )
+
+    db.session.add(row)
+    db.session.commit()
+
+    print("analysis 테이블 저장 완료")
+    print(f"analyzed_type   : {analyzed_type}")
+    print(f"analyzed_name   : {analyzed_name}")
+    print(f"analyze_input   : {analyze_input}")
+    print(f"analyze_target  : {analyze_target}")
 
 # =========================
 # 0. 기본 설정
@@ -191,7 +270,6 @@ def load_growth_from_db():
             GrowthData.plant_num.label('개체번호'),
             GrowthData.axillary_branch.label('액아구분'),
             GrowthData.plant_height.label('초장'),
-            GrowthData.crown_diameter.label('관부직경'),
             GrowthData.leaf_length.label('엽장'),
             GrowthData.leaf_width.label('엽폭'),
             GrowthData.petiole_length.label('엽병장')
@@ -208,7 +286,7 @@ def load_growth_from_db():
     df['조사일자'] = pd.to_datetime(df['조사일자'], errors='coerce')
     df = df.dropna(subset=['조사일자'])
 
-    for col in ['개체번호', '초장', '관부직경', '엽장', '엽폭', '엽병장']:
+    for col in ['개체번호', '초장', '엽장', '엽폭', '엽병장']:
         df[col] = pd.to_numeric(df[col], errors='coerce')
 
     if USE_MAIN_STEM_ONLY:
@@ -233,16 +311,13 @@ def load_growth_clean():
         df.groupby(key_cols, as_index=False)
           .agg({
               '초장': first_valid,
-              '관부직경': first_valid,
               '엽장': first_valid,
               '엽폭': first_valid,
               '엽병장': first_valid
           })
     )
 
-    grow_clean['has_null_target_base'] = grow_clean[['초장', '관부직경']].isnull().any(axis=1)
-    grow_clean = grow_clean[~grow_clean['has_null_target_base']].copy()
-    grow_clean = grow_clean.drop(columns=['has_null_target_base'])
+    grow_clean = grow_clean.dropna(subset=['초장']).copy()
 
     return grow_clean
 
@@ -258,20 +333,16 @@ def make_growth_intervals(grow_all):
 
     grow_all['prev_date'] = grow_all.groupby(group_cols)['조사일자'].shift(1)
     grow_all['prev_초장'] = grow_all.groupby(group_cols)['초장'].shift(1)
-    grow_all['prev_관부직경'] = grow_all.groupby(group_cols)['관부직경'].shift(1)
+
+    grow_all['prev_엽장'] = grow_all.groupby(group_cols)['엽장'].shift(1)
+    grow_all['prev_엽폭'] = grow_all.groupby(group_cols)['엽폭'].shift(1)
+    grow_all['prev_엽병장'] = grow_all.groupby(group_cols)['엽병장'].shift(1)
 
     grow_all['interval_days'] = (grow_all['조사일자'] - grow_all['prev_date']).dt.days
 
     grow_all['target_dheight_per_day'] = (
         (grow_all['초장'] - grow_all['prev_초장']) / grow_all['interval_days']
     )
-    grow_all['target_dcrown_per_day'] = (
-        (grow_all['관부직경'] - grow_all['prev_관부직경']) / grow_all['interval_days']
-    )
-
-    grow_all['prev_엽장'] = grow_all.groupby(group_cols)['엽장'].shift(1)
-    grow_all['prev_엽폭'] = grow_all.groupby(group_cols)['엽폭'].shift(1)
-    grow_all['prev_엽병장'] = grow_all.groupby(group_cols)['엽병장'].shift(1)
 
     interval_df = grow_all.dropna(subset=['prev_date']).copy()
 
@@ -281,10 +352,9 @@ def make_growth_intervals(grow_all):
     ].copy()
 
     interval_df = interval_df.dropna(subset=[
-        'prev_초장', 'prev_관부직경',
-        '초장', '관부직경',
-        'target_dheight_per_day',
-        'target_dcrown_per_day'
+        'prev_초장',
+        '초장',
+        'target_dheight_per_day'
     ]).copy()
 
     return interval_df
@@ -337,7 +407,6 @@ def aggregate_env_for_intervals(interval_df, env_daily):
         if valid_ratio < MIN_VALID_DAY_RATIO_IN_INTERVAL:
             continue
 
-        # 평균계산은 valid_env 기준으로 유지
         temp_mean_interval = valid_env['temp_mean_day'].mean()
         hum_mean_interval = valid_env['hum_mean_day'].mean()
         co2_mean_interval = valid_env['co2_mean_day'].mean()
@@ -393,7 +462,6 @@ def build_dataset_from_db():
         'x_rad_3day',
         'x_gdd_cum',
         'prev_초장',
-        'prev_관부직경',
         'prev_엽장',
         'prev_엽폭',
         'prev_엽병장',
@@ -401,23 +469,20 @@ def build_dataset_from_db():
         'x_high_temp_hours'
     ]
 
-    target_cols = [
-        'target_dheight_per_day',
-        'target_dcrown_per_day'
-    ]
+    target_col = 'target_dheight_per_day'
 
-    dataset = dataset.dropna(subset=feature_cols + target_cols).copy()
+    dataset = dataset.dropna(subset=feature_cols + [target_col]).copy()
 
+    # 초장 변화율 이상치 제거(기존 유지)
     dataset = dataset[dataset['target_dheight_per_day'] < 1].copy()
-    dataset = dataset[dataset['target_dcrown_per_day'] < 0.5].copy()
 
-    return dataset, feature_cols, target_cols
+    return dataset, feature_cols, target_col
 
 
 # =========================
-# 8. 모델 학습/평가
+# 8. 여러 모델 학습/평가
 # =========================
-def train_and_evaluate(dataset, feature_cols, target_cols):
+def train_and_evaluate_models(dataset, feature_cols, target_col):
     dataset = dataset.copy()
 
     dataset['group_id'] = (
@@ -427,7 +492,7 @@ def train_and_evaluate(dataset, feature_cols, target_cols):
     )
 
     X = dataset[feature_cols]
-    y = dataset[target_cols]
+    y = dataset[target_col]
     groups = dataset['group_id']
 
     splitter = GroupShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
@@ -436,8 +501,8 @@ def train_and_evaluate(dataset, feature_cols, target_cols):
     X_train, X_test = X.iloc[train_idx], X.iloc[test_idx]
     y_train, y_test = y.iloc[train_idx], y.iloc[test_idx]
 
-    model = MultiOutputRegressor(
-        RandomForestRegressor(
+    models = {
+        "RandomForest": RandomForestRegressor(
             n_estimators=300,
             max_depth=None,
             min_samples_leaf=1,
@@ -445,13 +510,33 @@ def train_and_evaluate(dataset, feature_cols, target_cols):
             max_features='sqrt',
             random_state=42,
             n_jobs=-1
+        ),
+        "ExtraTrees": ExtraTreesRegressor(
+            n_estimators=300,
+            max_depth=None,
+            min_samples_leaf=1,
+            min_samples_split=10,
+            max_features='sqrt',
+            random_state=42,
+            n_jobs=-1
+        ),
+        "GradientBoosting": GradientBoostingRegressor(
+            n_estimators=300,
+            learning_rate=0.03,
+            max_depth=3,
+            random_state=42
+        ),
+        "HistGradientBoosting": HistGradientBoostingRegressor(
+            learning_rate=0.03,
+            max_depth=6,
+            max_iter=300,
+            random_state=42
         )
-    )
+    }
 
-    model.fit(X_train, y_train)
-    pred = model.predict(X_test)
-
-    pred_df = pd.DataFrame(pred, columns=target_cols, index=y_test.index)
+    results = []
+    fitted_models = {}
+    pred_table = y_test.to_frame(name='actual').copy()
 
     print("\n[전체 샘플 수]")
     print(len(dataset))
@@ -459,31 +544,70 @@ def train_and_evaluate(dataset, feature_cols, target_cols):
     print("\n[Train / Test]")
     print(len(X_train), len(X_test))
 
-    print("\n[타겟별 성능]")
-    for col in target_cols:
-        mae = mean_absolute_error(y_test[col], pred_df[col])
-        r2 = r2_score(y_test[col], pred_df[col])
-        print(f"{col:>25} | MAE={mae:.4f} | R2={r2:.4f}")
+    print("\n[모델별 성능]")
+    for name, model in models.items():
+        model.fit(X_train, y_train)
+        pred = model.predict(X_test)
+
+        mae = mean_absolute_error(y_test, pred)
+        r2 = r2_score(y_test, pred)
+
+        results.append({
+            'model': name,
+            'MAE': mae,
+            'R2': r2
+        })
+
+        pred_table[f'pred_{name}'] = pred
+        fitted_models[name] = model
+
+        print(f"{name:>20} | MAE={mae:.4f} | R2={r2:.4f}")
+
+    result_df = pd.DataFrame(results).sort_values(by='R2', ascending=False).reset_index(drop=True)
+
+    print("\n[모델 성능 비교표]")
+    print(result_df)
 
     print("\n[예측 샘플]")
-    sample = y_test.copy()
-    for col in target_cols:
-        sample[f"pred_{col}"] = pred_df[col]
-    print(sample.head(10))
+    print(pred_table.head(10))
 
-    return model, X_train, X_test, y_train, y_test, pred_df
+    return fitted_models, result_df, X_train, X_test, y_train, y_test, pred_table
 
 
 # =========================
-# 9. 실행
+# 9. 중요도 출력
+# =========================
+def print_feature_importance(fitted_models, feature_cols):
+    tree_model_names = ['RandomForest', 'ExtraTrees', 'GradientBoosting']
+
+    for name in tree_model_names:
+        if name not in fitted_models:
+            continue
+
+        model = fitted_models[name]
+
+        if hasattr(model, 'feature_importances_'):
+            importance = pd.Series(
+                model.feature_importances_,
+                index=feature_cols
+            ).sort_values(ascending=False)
+
+            print(f"\n[Feature importance - {name}]")
+            print(importance)
+
+    if 'HistGradientBoosting' in fitted_models:
+        print("\n[Feature importance - HistGradientBoosting]")
+        print("HistGradientBoostingRegressor는 기본 feature_importances_를 직접 제공하지 않습니다.")
+
+
+# =========================
+# 10. 실행
 # =========================
 if __name__ == "__main__":
     app = create_app()
 
     with app.app_context():
-        df = load_env_from_db()
-
-        dataset, feature_cols, target_cols = build_dataset_from_db()
+        dataset, feature_cols, target_col = build_dataset_from_db()
 
         print("\n[최종 데이터셋 컬럼]")
         print(dataset.columns.tolist())
@@ -495,19 +619,18 @@ if __name__ == "__main__":
         print(dataset[feature_cols].describe())
 
         print("\n[타겟 기초통계]")
-        print(dataset[target_cols].describe())
+        print(dataset[[target_col]].describe())
 
-        model, X_train, X_test, y_train, y_test, pred_df = train_and_evaluate(
-            dataset, feature_cols, target_cols
+        fitted_models, result_df, X_train, X_test, y_train, y_test, pred_table = train_and_evaluate_models(
+            dataset, feature_cols, target_col
         )
 
-        for i, target in enumerate(target_cols):
-            rf = model.estimators_[i]
+        print_feature_importance(fitted_models, feature_cols)
 
-            importance = pd.Series(
-                rf.feature_importances_,
-                index=feature_cols
-            ).sort_values(ascending=False)
-
-            print(f"\n[Feature importance - {target}]")
-            print(importance)
+        save_analysis_result_to_db(
+            fitted_models=fitted_models,
+            result_df=result_df,
+            feature_cols=feature_cols,
+            target_col=target_col,
+            analyzed_type='기본'
+        )
