@@ -35,27 +35,27 @@ class Environment(db.Model):
     carbon_dioxide = db.Column(db.Integer, nullable=False)
     soil_temp = db.Column(db.Float)
 
-# class GrowthData(db.Model):
-#     __tablename__ = 'growth_data'
-#     farm_id = db.Column(db.Integer, nullable=False)
-#     survey_date = db.Column(db.DateTime, nullable=False)
-#     plant_num = db.Column(db.Integer, nullable=False)
-#     axillary_branch = db.Column(db.String)
-#     plant_height = db.Column(db.Float, nullable=False)
-#     leaf_count = db.Column(db.Integer)
-#     leaf_length = db.Column(db.Float)
-#     leaf_width = db.Column(db.Float)
-#     petiole_length = db.Column(db.Float)
-#     crown_diameter = db.Column(db.Float, nullable=False)
-#     flower_cluster_no = db.Column(db.Integer)
-#     fruits_per_cluster = db.Column(db.Integer)
+class GrowthData(db.Model):
+    __tablename__ = 'growth_data'
+    farm_id = db.Column(db.Integer, db.ForeignKey('farm_info.farm_id'), primary_key=True, nullable=False)
+    survey_date = db.Column(db.DateTime, primary_key=True, nullable=False)
+    plant_num = db.Column(db.Integer, primary_key=True, nullable=False)
+    axillary_branch = db.Column(db.String)
+    plant_height = db.Column(db.Float, nullable=False)
+    leaf_count = db.Column(db.Integer)
+    leaf_length = db.Column(db.Float)
+    leaf_width = db.Column(db.Float)
+    petiole_length = db.Column(db.Float)
+    crown_diameter = db.Column(db.Float, nullable=False)
+    flower_cluster_no = db.Column(db.Integer)
+    fruits_per_cluster = db.Column(db.Integer)
 
-# class ProductData(db.Model):
-#     __tablename__ = 'product_data'
-#     farm_id = db.Column(db.Integer, nullable=False)
-#     production_date = db.Column(db.DateTime, nullable=False)
-#     total_quantity = db.Column(db.Float, nullable=False)
-#     total_sales = db.Column(db.Integer)
+class ProductData(db.Model):
+    __tablename__ = 'product_data'
+    farm_id = db.Column(db.Integer, db.ForeignKey('farm_info.farm_id'), primary_key=True, nullable=False)
+    production_date = db.Column(db.DateTime, primary_key=True, nullable=False)
+    total_quantity = db.Column(db.Float, nullable=False)
+    total_sales = db.Column(db.Integer)
 
 class CultivationInfo(db.Model):
     __tablename__ = 'cultivation_info'

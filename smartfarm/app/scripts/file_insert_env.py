@@ -5,7 +5,7 @@ import os, re
 from app import db
 from app.models import FarmInfo, Environment
 
-ENV_DATA_PATH = "D:/취업반/1차프로젝트/raw_datas/환경_딸기_2022.csv"
+ENV_DATA_PATH = "D:/취업반/1차프로젝트/raw_datas/환경_딸기_2018.csv"
 
 
 def load_strawberry_environment_csv(csv_path):
@@ -98,6 +98,7 @@ def load_strawberry_environment_csv(csv_path):
             measure_time = row.measure_time.to_pydatetime()
 
             # 중복 체크 (PK: farm_id, measure_time)
+            # 동일 시간 동일 데이터가 두번 기록되어 있는 경우도 여기서 걸러짐
             existing_env = Environment.query.filter_by(
                 farm_id=farm_id,
                 measure_time=measure_time
