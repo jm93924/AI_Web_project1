@@ -10,8 +10,20 @@
                 <div class="col-md-4">
                     <div class="summary-card">
                         <div class="summary-title">오늘의 딸기 도매가</div>
-                        <div class="summary-value">10,500원 / kg</div>
-                        <div class="summary-change up">↗ +0.9%</div>
+                        <div class="summary-value">
+                            {% if wholesale_info and wholesale_info.price %}
+                                {{ "{:,.0f}".format(wholesale_info.price|replace(',', '')|int) }}원 / kg
+                            {% else %}
+                                가격 정보 없음
+                            {% endif %}
+                        </div>
+                        <div class="summary-change up">
+                            {% if wholesale_info and wholesale_info.regday %}
+                                기준일: {{ wholesale_info.regday }}
+                            {% else %}
+                                KAMIS 연동 대기
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
 
