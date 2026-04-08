@@ -742,6 +742,8 @@ def run_analysis(env_file=None, growth_file=None):
 
     print_feature_importance(fitted_models, feature_cols)
 
+    return fitted_models, result_df, feature_cols, target_col
+
 
 # =========================
 # 10. 실행
