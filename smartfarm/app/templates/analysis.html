@@ -4,156 +4,335 @@
 <div class="analysis-page">
     <div class="container py-4">
 
-        <!-- 2, 3 -->
-        <section class="analysis-hero mb-5">
-            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+        <!-- 상단 제목 -->
+        <section class="analysis-header mb-5">
+            <div class="analysis-heading-wrap d-flex align-items-center gap-3">
+                <div class="analysis-leaf">🍃</div>
                 <div>
-                    <h1 class="analysis-title">데이터 분석 서비스</h1>
-                    <p class="analysis-desc">
-                        축적된 농가 데이터를 분석하여 최적 환경을 추천해드립니다
-                    </p>
-                </div>
-
-                <div>
-                    <a href="#upload-section" class="analysis-go-btn">분석하러가기</a>
+                    <h1 class="analysis-main-title">딸기 재배 환경 요인 분석</h1>
+                    <p class="analysis-main-desc">머신러닝 기반 환경 요인별 생육 영향도 분석</p>
                 </div>
             </div>
         </section>
 
-        <!-- 4, 5 -->
-        <section class="recommend-section mb-4">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
-                <div>
-                    <h2 class="section-main-title">최적 환경 추천</h2>
-                    <p class="section-subtext">
-                        {% if has_uploaded_data %}
-                            업로드한 데이터를 기준으로 한 맞춤 추천입니다
-                        {% else %}
-                            일반적인 딸기 재배 환경을 기준으로 한 추천입니다
-                        {% endif %}
-                    </p>
-                </div>
-
-                <div class="analysis-tabs">
-                    <button class="analysis-tab {% if not has_uploaded_data %}active{% endif %}" type="button">기본</button>
-                    <button class="analysis-tab {% if has_uploaded_data %}active{% endif %}" type="button">맞춤</button>
-                </div>
-            </div>
-
-            <!-- 6, 7 -->
-            <div class="env-recommend-list">
-
-                <div class="env-card">
-                    <div class="env-left">
-                        <div class="env-title">온도</div>
-                        <div class="env-desc">현재: 19℃ → 권장: 18℃</div>
-                    </div>
-                    <div class="env-right">
-                        <div class="env-diff positive">+1℃</div>
-                        <div class="env-rate">5.6% 차이</div>
-                    </div>
-                </div>
-
-                <div class="env-card">
-                    <div class="env-left">
-                        <div class="env-title">습도</div>
-                        <div class="env-desc">현재: 68% → 권장: 70%</div>
-                    </div>
-                    <div class="env-right">
-                        <div class="env-diff negative">-2%</div>
-                        <div class="env-rate">2.9% 차이</div>
-                    </div>
-                </div>
-
-                <div class="env-card">
-                    <div class="env-left">
-                        <div class="env-title">CO2</div>
-                        <div class="env-desc">현재: 915ppm → 권장: 900ppm</div>
-                    </div>
-                    <div class="env-right">
-                        <div class="env-diff positive">+15ppm</div>
-                        <div class="env-rate">1.7% 차이</div>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- 8, 9 -->
-        <section class="effect-section mb-4">
+        <!-- 차트 -->
+        <section class="chart-section mb-4">
             <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="effect-card effect-blue">
-                        <div class="effect-icon">📈</div>
-                        <div class="effect-content">
-                            <div class="effect-title">예상 생산량 증가</div>
-                            <div class="effect-value">+12.5%</div>
-                            <div class="effect-sub">약 +228kg/월 증가 예상</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="effect-card effect-green">
-                        <div class="effect-icon">💲</div>
-                        <div class="effect-content">
-                            <div class="effect-title">예상 수익 증가</div>
-                            <div class="effect-value">+2,394,000원</div>
-                            <div class="effect-sub">약 +228kg/월 증가 예상</div>
+                <div class="col-12">
+                    <div class="chart-card h-100">
+                        <h3 class="chart-card-title">중요도</h3>
+                        <div class="chart-canvas-wrap">
+                            <canvas id="importanceChart"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 10, 11, 12 -->
+        <!-- 요약 카드 -->
+        <section class="summary-section mb-5">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="summary-card summary-red h-100">
+                        <div class="summary-title">가장 중요한 요인</div>
+                        <div class="summary-value">{{ top_factor }}</div>
+                        <div class="summary-sub">중요도: {{ top_factor_ratio }}%</div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="summary-card summary-blue h-100">
+                        <div class="summary-title">분석된 환경 요인</div>
+                        <div class="summary-value">{{ factor_count }}개</div>
+                        <div class="summary-sub">
+                            총 중요도 합:
+                            {% if relative_values %}
+                                {{ '%.1f'|format(relative_values|sum) }}%
+                            {% else %}
+                                0.0%
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="summary-card summary-green h-100">
+                        <div class="summary-title">상위 3개 요인 비중</div>
+                        <div class="summary-value">{{ top3_ratio }}%</div>
+                        <div class="summary-sub">{{ top3_names|join(', ') }}</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 업로드 영역 -->
         <section class="upload-section" id="upload-section">
             <div class="upload-wrapper">
-                <div class="upload-header d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
-                    <div>
-                        <h3 class="upload-title">맞춤 분석을 원하시나요?</h3>
-                        <p class="upload-desc">
-                            농가의 실제 데이터를 업로드하면 더욱 정확한 분석 결과를 제공합니다.
-                        </p>
-                    </div>
+                <div class="upload-header mb-4">
+                    <h3 class="upload-title">맞춤 분석을 원하시나요?</h3>
+                    <p class="upload-desc">
+                        농가의 실제 데이터를 업로드하면 더욱 정확한 분석 결과를 제공합니다.
+                    </p>
                 </div>
 
-                <form method="post" enctype="multipart/form-data">
+                <form method="post" enctype="multipart/form-data" id="analysisForm">
                     <div class="row g-4">
+
                         <div class="col-md-4">
-                            <label class="upload-box">
-                                <input type="file" name="env_file" hidden>
+                            <label class="upload-box" id="envBox">
+                                <input type="file" name="env_file" id="envFile" accept=".csv" hidden>
                                 <div class="upload-box-title">환경 데이터</div>
-                                <div class="upload-box-sub">CSV, Excel</div>
+                                <div class="upload-box-sub">CSV 파일만 업로드 가능</div>
+                                <div class="upload-file-name" id="envFileName">선택된 파일 없음</div>
                             </label>
                         </div>
 
                         <div class="col-md-4">
-                            <label class="upload-box">
-                                <input type="file" name="growth_file" hidden>
+                            <label class="upload-box" id="growthBox">
+                                <input type="file" name="growth_file" id="growthFile" accept=".csv" hidden>
                                 <div class="upload-box-title">생육 데이터</div>
-                                <div class="upload-box-sub">CSV, Excel</div>
+                                <div class="upload-box-sub">CSV 파일만 업로드 가능</div>
+                                <div class="upload-file-name" id="growthFileName">선택된 파일 없음</div>
                             </label>
                         </div>
 
                         <div class="col-md-4">
-                            <label class="upload-box">
-                                <input type="file" name="yield_file" hidden>
+                            <label class="upload-box" id="yieldBox">
+                                <input type="file" name="yield_file" id="yieldFile" accept=".csv" hidden>
                                 <div class="upload-box-title">생산량 데이터</div>
-                                <div class="upload-box-sub">CSV, Excel</div>
+                                <div class="upload-box-sub">CSV 파일만 업로드 가능</div>
+                                <div class="upload-file-name" id="yieldFileName">선택된 파일 없음</div>
                             </label>
                         </div>
 
-                        <div>
-                        <button type="submit" class="ai-start-btn">AI 분석 시작</button>
                     </div>
+
+                    <div class="ai-start-btn-wrap mt-4">
+                        <button type="submit" class="ai-start-btn" id="submitBtn" disabled>
+                            AI 분석 시작
+                        </button>
                     </div>
+
                 </form>
             </div>
         </section>
-
     </div>
 </div>
 
+<div id="chartModal" class="chart-modal">
+    <div class="chart-modal-content">
+        <canvas id="fullscreenChart"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+<script>
+
+const chartLabels = JSON.parse('{{ chart_labels|tojson|safe }}');
+const importanceValues = JSON.parse('{{ relative_values|tojson|safe }}');
+
+Chart.register(ChartDataLabels);
+
+const barColors = [
+'#c56456','#6d7fd1','#d1a44a','#7faf82',
+'#7a64d4','#7fa5c0','#b0659e','#c78342','#8a9957'
+];
+
+function getAxisMax(values){
+    const maxValue = Math.max(...values);
+    if(maxValue<=20) return 20;
+    if(maxValue<=25) return 25;
+    return Math.ceil(maxValue/5)*5;
+}
+
+const axisMax = getAxisMax(importanceValues);
+
+const ctx = document.getElementById('importanceChart');
+
+new Chart(ctx,{
+    type:'bar',
+    data:{
+        labels:chartLabels,
+        datasets:[{
+            label:'중요도',
+            data:importanceValues,
+            backgroundColor:barColors,
+            borderRadius:12,
+            barThickness:26
+        }]
+    },
+    options:{
+        responsive:true,
+        maintainAspectRatio:false,
+        indexAxis:'y',
+        plugins:{
+            legend:{display:true},
+            datalabels:{
+                anchor:'end',
+                align:'right',
+                formatter:v=>v.toFixed(2)+'%',
+                font:{size:12,weight:'700'}
+            }
+        },
+        scales:{
+            x:{
+                beginAtZero:true,
+                max:axisMax,
+                ticks:{
+                    callback:v=>v+'%'
+                }
+            }
+        }
+    }
+});
+
+const modal=document.getElementById("chartModal");
+const fullscreenCtx=document.getElementById("fullscreenChart").getContext("2d");
+let fullscreenChart=null;
+
+document.getElementById("importanceChart")
+.addEventListener("click",function(){
+
+modal.style.display="block";
+
+if(fullscreenChart){
+fullscreenChart.destroy();
+}
+
+fullscreenChart=new Chart(fullscreenCtx,{
+type:'bar',
+data:{
+labels:chartLabels,
+datasets:[{
+label:'중요도',
+data:importanceValues,
+backgroundColor:barColors,
+borderRadius:12,
+barThickness:40
+}]
+},
+options:{
+indexAxis:'y',
+responsive:true,
+maintainAspectRatio:false,
+
+plugins:{
+legend:{display:false},
+
+tooltip:{
+titleFont:{size:20},
+bodyFont:{size:18},
+callbacks:{
+label:(ctx)=>ctx.raw.toFixed(2)+'%'
+}
+},
+
+datalabels:{
+anchor:'end',
+align:'right',
+formatter:v=>v.toFixed(2)+'%',
+font:{
+size:22,
+weight:'bold'
+}
+}
+},
+
+scales:{
+x:{
+min:0,
+max:axisMax,
+ticks:{
+font:{size:18},
+callback:v=>v+'%'
+}
+},
+y:{
+ticks:{
+font:{size:20}
+}
+}
+}
+
+}
+});
+
+});
+
+modal.addEventListener("click",function(){
+modal.style.display="none";
+});
+
+</script>
+
+<!-- "AI분석" 버튼 관련 JS -->
+<script>
+
+const envFile = document.getElementById("envFile");
+const growthFile = document.getElementById("growthFile");
+const yieldFile = document.getElementById("yieldFile");
+
+const envBox = document.getElementById("envBox");
+const growthBox = document.getElementById("growthBox");
+const yieldBox = document.getElementById("yieldBox");
+
+const envFileName = document.getElementById("envFileName");
+const growthFileName = document.getElementById("growthFileName");
+const yieldFileName = document.getElementById("yieldFileName");
+
+const submitBtn = document.getElementById("submitBtn");
+
+function isCsv(file){
+    if(!file) return false;
+    return file.name.toLowerCase().endsWith(".csv");
+}
+
+function updateBox(input, box, nameEl){
+
+    const file = input.files[0];
+
+    if(!file){
+        box.classList.remove("active");
+        nameEl.textContent = "선택된 파일 없음";
+        return;
+    }
+
+    if(!isCsv(file)){
+        alert("CSV 파일만 업로드 가능합니다.");
+        input.value="";
+        return;
+    }
+
+    box.classList.add("active");
+    nameEl.textContent=file.name;
+
+    updateSubmitButton();
+}
+
+function updateSubmitButton(){
+
+    const ready =
+        envFile.files.length>0 &&
+        growthFile.files.length>0 &&
+        yieldFile.files.length>0;
+
+    submitBtn.disabled = !ready;
+}
+
+envFile.addEventListener("change",()=>{
+    updateBox(envFile,envBox,envFileName);
+});
+
+growthFile.addEventListener("change",()=>{
+    updateBox(growthFile,growthBox,growthFileName);
+});
+
+yieldFile.addEventListener("change",()=>{
+    updateBox(yieldFile,yieldBox,yieldFileName);
+});
+
+</script>
 
 {% endblock %}
