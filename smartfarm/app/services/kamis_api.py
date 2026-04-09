@@ -1,9 +1,9 @@
 import requests
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 KAMIS_API_KEY = "3cd65fc0-a7f8-4802-a429-57a9f0ef749c"
 KAMIS_CERT_ID = "7375"
-KAMIS_URL = "http://www.kamis.or.kr/service/price/xml.do?action=periodProductList"
+KAMIS_URL = "http://www.kamis.or.kr/service/price/xml.do"
 
 def get_today_strawberry_wholesale_price():
     """
@@ -16,7 +16,7 @@ def get_today_strawberry_wholesale_price():
     end_day = today.strftime("%Y-%m-%d")
 
     params = {
-        "action": "periodProductList",
+        "action": "periodProductList",  # 일별 품목별 도소매가격 정보
         "p_cert_key": KAMIS_API_KEY,
         "p_cert_id": KAMIS_CERT_ID,
         "p_returntype": "json",
@@ -35,7 +35,6 @@ def get_today_strawberry_wholesale_price():
     response.raise_for_status()
 
     result = response.json()
-    print("KAMIS 응답:", result)
 
     # 실제 응답 구조: result -> data -> item
     data_block = result.get("data", {})
@@ -82,4 +81,81 @@ def get_today_strawberry_wholesale_price():
         "regday": latest.get("regday", ""),
         "yyyy": latest.get("yyyy", ""),
         "price": price
+    }
+
+def fetch_kamis_period_prices(
+    start_day: str,
+    end_day: str,
+    product_cls_code: str = "02",      # 도매
+    item_category_code: str = "200",
+    item_code: str = "226",            # 딸기
+    kind_code: str = "00",
+    product_rank_code: str = "05",     # 중품
+    country_code: str = "1101",        # 서울
+    convert_kg_yn: str = "Y"
+):
+    """
+    지정 기간의 KAMIS 가격 데이터를 가져와 raw json item 리스트를 반환
+    """
+
+    params = {
+        "action": "periodProductList",
+        "p_cert_key": KAMIS_API_KEY,
+        "p_cert_id": KAMIS_CERT_ID,
+        "p_returntype": "json",
+        "p_startday": start_day,
+        "p_endday": end_day,
+        "p_productclscode": product_cls_code,
+        "p_itemcategorycode": item_category_code,
+        "p_itemcode": item_code,
+        "p_kindcode": kind_code,
+        "p_productrankcode": product_rank_code,
+        "p_countrycode": country_code,
+        "p_convert_kg_yn": convert_kg_yn,
+    }
+
+    response = requests.get(KAMIS_URL, params=params, timeout=20)
+    response.raise_for_status()
+
+    print("요청 URL:", response.url)
+
+    result = response.json()
+    print("condition:", result.get("condition"))
+
+    data_block = result.get("data", {})
+    error_code = data_block.get("error_code", "")
+
+    if error_code != "000":
+        raise ValueError(f"KAMIS API error_code={error_code}, response={result}")
+
+    items = data_block.get("item", [])
+
+    if isinstance(items, dict):
+        items = [items]
+
+    if items:
+        print("첫 행:", items[0])
+        print("마지막 행:", items[-1])
+
+    return items
+
+
+def parse_kamis_item(item: dict, meta: dict) -> dict:
+    """
+    KAMIS item 1건을 DB 저장용 dict로 변환
+    """
+    yyyy = str(item.get("yyyy", "")).strip()
+    regday = str(item.get("regday", "")).strip()   # 예: 04/07
+
+    price_date = None
+    if yyyy and regday:
+        month, day = regday.split("/")
+        price_date = date(int(yyyy), int(month), int(day))
+
+    price_str = str(item.get("price", "0")).replace(",", "").strip()
+    price = int(price_str) if price_str.isdigit() else None
+
+    return {
+        "price_date": price_date,
+        "price": price,
     }

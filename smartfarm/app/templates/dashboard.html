@@ -68,10 +68,10 @@
                     <div class="chart-card">
                         <div class="chart-header">
                             <h3>전국 딸기 가격 추이</h3>
-                            <div class="chart-tabs">
-                                <button class="tab-btn active">일간</button>
-                                <button class="tab-btn">주간</button>
-                                <button class="tab-btn">월간</button>
+                            <div class="chart-tabs" id="priceChartTabs">
+                                <button class="tab-btn active" data-type="daily">일간</button>
+                                <button class="tab-btn" data-type="weekly">주간</button>
+                                <button class="tab-btn" data-type="monthly">월간</button>
                             </div>
                         </div>
                         <div class="chart-body">
@@ -154,14 +154,21 @@
         }
     });
 
+    const priceDataMap = {
+        daily: {{ price_daily | tojson }},
+        weekly: {{ price_weekly | tojson }},
+        monthly: {{ price_monthly | tojson }}
+    };
+
     const priceCtx = document.getElementById('priceChart');
-    new Chart(priceCtx, {
+
+    const priceChart = new Chart(priceCtx, {
         type: 'line',
         data: {
-            labels: ['03/01', '03/02', '03/03', '03/04', '03/05', '03/06', '03/07', '03/08', '03/09', '03/10', '03/11', '03/12', '03/13', '03/14'],
+            labels: priceDataMap.daily.labels,
             datasets: [{
                 label: '가격(원/kg)',
-                data: [10750, 10680, 10600, 10520, 10440, 10530, 10600, 10540, 10480, 10400, 10480, 10540, 10540, 10600],
+                data: priceDataMap.daily.values,
                 borderColor: '#c94a3b',
                 backgroundColor: 'rgba(201, 74, 59, 0.15)',
                 tension: 0.35,
@@ -175,6 +182,23 @@
             maintainAspectRatio: false
         }
     });
+
+    const priceTabButtons = document.querySelectorAll('#priceChartTabs .tab-btn');
+
+    priceTabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const type = button.dataset.type;
+            const selectedData = priceDataMap[type];
+
+            priceChart.data.labels = selectedData.labels;
+            priceChart.data.datasets[0].data = selectedData.values;
+            priceChart.update();
+
+            priceTabButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+        });
+    });
 </script>
+
 
 {% endblock %}

@@ -109,3 +109,19 @@ class Analysis(db.Model):
     hist_gradient_boosting_score = db.Column(db.Float, nullable=False)
 
     analyzed_date = db.Column(db.DateTime, nullable=False)
+
+
+
+class Price(db.Model):
+    __tablename__ = 'price'
+
+    seq = db.Column(
+        db.Integer,
+        Sequence('price_seq', start=1, increment=1),
+        primary_key=True
+    )
+
+    trade_date = db.Column(db.DateTime, nullable=False)
+    grade = db.Column(db.String(10), nullable=False)
+    avg_price = db.Column(db.Integer, nullable=False)
+
