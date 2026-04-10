@@ -12,16 +12,16 @@
                         <div class="summary-title">오늘의 딸기 도매가</div>
                         <div class="summary-value">
                             {% if wholesale_info and wholesale_info.price %}
-                                {{ "{:,.0f}".format(wholesale_info.price|replace(',', '')|int) }}원 / kg
+                                {{ "{:,.0f}".format(wholesale_info.price) }}원 / kg
                             {% else %}
                                 가격 정보 없음
                             {% endif %}
                         </div>
                         <div class="summary-change up">
-                            {% if wholesale_info and wholesale_info.regday %}
-                                기준일: {{ wholesale_info.regday }}
+                            {% if wholesale_info and wholesale_info.trade_date %}
+                                기준일: {{ wholesale_info.trade_date.strftime('%Y-%m-%d') }}
                             {% else %}
-                                KAMIS 연동 대기
+                                가격 정보 없음
                             {% endif %}
                         </div>
                     </div>
@@ -199,6 +199,5 @@
         });
     });
 </script>
-
 
 {% endblock %}
